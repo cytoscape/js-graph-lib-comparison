@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>Sigma 1.1.0</title>
+
+    <style>
+      body { padding: 0; margin: 0; }
+      #graph { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+    </style>
+
+    <script src="../bluebird.min.js"></script>
+    <script src="../fetch.js"></script>
+    <script src="sigma.min.js"></script>
+    <script src="sigma.layout.forceAtlas2.min.js"></script>
+
+    <script>
+
+      var rand = function( min, max ){
+        return min + Math.round( Math.random() * (max - min) );
+      };
+
+      window.addEventListener('DOMContentLoaded', function(){
+        var s = new sigma('graph');
+
+        fetch('graph.sigma.json').then(function( response ){
+          return response.json();
+        }).then(function( graph ){
+          graph.nodes.forEach(function( node ){
+            node.x = rand( 0, 100 );
+            node.y = rand( 0, 100 );
+            node.size = 10;
+            node.color = '#888';
+
+            // turn off labels because viva does not support them
+            node.label = undefined;
+
+            s.graph.addNode( node );
+          });
+
+          graph.edges.forEach(function( edge ){
+            edge.color = '#afafaf';
+
+            s.graph.addEdge( edge );
+          });
+
+          s.startForceAtlas2({
+            slowDown: 5
+          });
+
+          setTimeout(function(){
+            s.stopForceAtlas2();
+          }, 3000);
+
+          s.refresh();
+        });
+      });
+
+    </script>
+  </head>
+
+  <body>
+    <div id="graph"></div>
+  </body>
+
+</html>

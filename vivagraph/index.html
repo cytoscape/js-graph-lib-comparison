@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>VivaGraph 0.8.1</title>
+
+    <style>
+      body { padding: 0; margin: 0; }
+      #graph { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+    </style>
+
+    <script src="../bluebird.min.js"></script>
+    <script src="../fetch.js"></script>
+    <script src="vivagraph.min.js"></script>
+
+    <script>
+
+      window.addEventListener('DOMContentLoaded', function(){
+        var viva = Viva.Graph.graph();
+
+        fetch('graph.vivagraph.json').then(function( response ){
+          return response.json();
+        }).then(function( graph ){
+          graph.nodes.forEach(function( node ){
+            viva.addNode( node.id, { label: node.label } );
+          });
+
+          graph.edges.forEach(function( edge ){
+            viva.addLink( edge.source, edge.target );
+          });
+
+          var renderer = Viva.Graph.View.renderer(viva, {
+            graphics: Viva.Graph.View.webglGraphics(),
+            layout: Viva.Graph.Layout.forceDirected(viva, {
+              springLength : 200,
+              springCoeff : 0.0005,
+              dragCoeff : 0.2,
+              gravity : -10
+            }),
+            container: document.getElementById('graph')
+          });
+          renderer.run();
+        });
+      });
+
+    </script>
+  </head>
+
+  <body>
+    <div id="graph"></div>
+  </body>
+
+</html>

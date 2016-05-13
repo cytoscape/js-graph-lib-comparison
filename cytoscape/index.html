@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>Cytoscape 2.7.0-beta1</title>
+
+    <style>
+      body { padding: 0; margin: 0; }
+      #graph { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+    </style>
+
+    <script src="../bluebird.min.js"></script>
+    <script src="../fetch.js"></script>
+    <script src="cytoscape.min.js"></script>
+
+    <script>
+
+      window.addEventListener('DOMContentLoaded', function(){
+        var cy = cytoscape({
+          container: document.getElementById('graph'),
+          elements: fetch('graph.cytoscape.json').then(function( response ){
+            return response.json();
+          }),
+          layout: {
+            name: 'cose',
+            nodeOverlap: 20,
+            idealEdgeLength: function( edge ){ return 50; },
+            edgeElasticity: function( edge ){ return 1000; }
+          },
+          style: [
+            // turn off labels b/c viva doesn't support them
+            // {
+            //   selector: 'node',
+            //   style: {
+            //     'min-zoomed-font-size': 40,
+            //     'text-valign': 'center',
+            //     'text-halign': 'right',
+            //     'color': '#333',
+            //     'text-outline-color': '#fff',
+            //     'text-outline-width': 2,
+            //     'label': 'data(label)',
+            //     'font-size': 16
+            //   }
+            // },
+            // {
+            //   selector: 'node.hover',
+            //   style: {
+            //     'min-zoomed-font-size': 0,
+            //     'border-width': 2,
+            //     'border-color': '#fff',
+            //     'border-opacity': 1,
+            //     'z-index': 999
+            //   }
+            // },
+            {
+              selector: 'node:unselected',
+              style: {
+                'background-color': '#888'
+              }
+            },
+            {
+              selector: 'edge',
+              style: {
+                'opacity': 0.25
+              }
+            }
+          ]
+        });
+
+        cy.on('mouseover', 'node', function(){
+          this.addClass('hover');
+        }).on('mouseout', 'node', function(){
+          if( this.active() ){ return; }
+
+          this.removeClass('hover');
+        });
+      });
+
+    </script>
+  </head>
+
+  <body>
+    <div id="graph"></div>
+  </body>
+
+</html>
